@@ -131,6 +131,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>lottery-app</finalName>
+        <finalName>auth</finalName>
     </build>
 </project>
