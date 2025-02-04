@@ -2,6 +2,7 @@ com\spring3\oauth\jwt\dtos\JwtResponseDTO.class
 com\spring3\oauth\jwt\dtos\AuthRequestDTO.class
 com\spring3\oauth\jwt\models\UserInfo.class
 com\spring3\oauth\jwt\helpers\UserDetailsServiceImpl.class
+com\spring3\oauth\jwt\configurations\CustomCorsConfig.class
 com\spring3\oauth\jwt\models\RefreshToken$RefreshTokenBuilder.class
 com\spring3\oauth\jwt\exceptions\InvalidCredentialsException.class
 com\spring3\oauth\jwt\exceptions\GlobalExceptionHandler.class
@@ -20,7 +21,6 @@ com\spring3\oauth\jwt\dtos\JwtResponseDTO$JwtResponseDTOBuilder.class
 com\spring3\oauth\jwt\helpers\CustomUserDetails.class
 com\spring3\oauth\jwt\services\JwtService.class
 com\spring3\oauth\jwt\configurations\SecurityConfig.class
-com\spring3\oauth\jwt\models\UserRole.class
 com\spring3\oauth\jwt\models\RefreshToken.class
 com\spring3\oauth\jwt\helpers\RefreshableCRUDRepositoryImpl.class
 com\spring3\oauth\jwt\OauthJwtApplication.class
