@@ -55,7 +55,7 @@ public class UserInfo {
     private LocalDateTime createdAt;
 
     @Column(name = "CREATED_BY")
-    private int createdBy;
+    private String createdBy;
 
     @Column(name = "USER_ID", nullable = false)
     private int userId;
@@ -64,6 +64,6 @@ public class UserInfo {
     private LocalDateTime updatedAt;
 
     @Column(name = "UPDATED_BY")
-    private int updatedBy;
+    private String updatedBy;
 
 }

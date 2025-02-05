@@ -62,14 +62,14 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         user.setStatus("Active");
         if(userInfoRequest.getId() != null && userInfoRequest.getId() > 0){
             UserInfo oldUser = userRepository.findFirstById(userInfoRequest.getId());
-            oldUser.setCreatedBy(oldUser.getUserId());
+            oldUser.setCreatedBy(String.valueOf(oldUser.getUserId()));
             if(oldUser != null){
                 oldUser.setId(user.getId());
                 oldUser.setPassword(user.getPassword());
                 oldUser.setUsername(user.getUsername());
                 oldUser.setVerificationCode(user.getVerificationCode());
                 oldUser.setUpdatedAt(LocalDateTime.now());
-                oldUser.setUpdatedBy(oldUser.getUserId());
+                oldUser.setUpdatedBy(String.valueOf(oldUser.getUserId()));
                // oldUser.setRoles(user.getRoles());
 
                 savedUser = userRepository.save(oldUser);
@@ -146,7 +146,7 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         userInfoRequest.setUpdatedBy(userInfoRequest.getUpdatedBy());
         userInfoRequest.setIpAddress(this.returnClientIp(httpServletRequest));
         userInfoRequest.setUserLocation(this.getIPLocation(this.returnClientIp(httpServletRequest)));
-        userInfoRequest.setUpdatedBy((int) userInfoRequest.getId());
+        userInfoRequest.setUpdatedBy(String.valueOf(userInfoRequest.getId()));
         UserInfo user = modelMapper.map(userInfoRequest, UserInfo.class);
         user = userRepository.save(user);
         UserInfoResponse userResponse = modelMapper.map(user, UserInfoResponse.class);
