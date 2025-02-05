@@ -1,0 +1,23 @@
+# Ignore everything
+*
+
+# Ignore build artifacts
+target/
+
+# Allow src and config folders
+!src/
+!src/main/
+!src/main/*
+
+!src/test/
+!src/test/*
+
+# Allow specific files
+!README.md
+!application-staging.properties
+!pom.xml
+
+# Ignore unnecessary system files
+.DS_Store
+Thumbs.db
+
