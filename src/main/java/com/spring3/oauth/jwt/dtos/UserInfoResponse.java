@@ -23,7 +23,7 @@ public class UserInfoResponse {
     private String userLocation;
     private LocalDateTime createdAt;
     private String createdBy;
-    private LocalDateTime UpdatedAt;
-    private String UpdatedBy;
+    private LocalDateTime updatedAt;
+    private String updatedBy;
 
 }

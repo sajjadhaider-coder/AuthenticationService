@@ -61,9 +61,9 @@ public class UserInfo {
     private int userId;
 
     @Column(name = "UPDATED_AT")
-    private LocalDateTime UpdatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "UPDATED_BY")
-    private int UpdatedBy;
+    private int updatedBy;
 
 }
