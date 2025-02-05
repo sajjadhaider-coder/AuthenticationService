@@ -41,8 +41,8 @@ public class UserInfoRequest {
     private String ipAddress;
     private String userLocation;
     private LocalDateTime createdAt;
-    private String createdBy;
+    private String  createdBy;
     private int userId;
     private LocalDateTime UpdatedAt;
-    private String UpdatedBy;
+    private String  UpdatedBy;
 }
