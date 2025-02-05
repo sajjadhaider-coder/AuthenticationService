@@ -85,23 +85,32 @@ public class UserController {
     // Authenticate user and generate JWT access token
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO, HttpServletRequest httpServletRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())  // Authenticate using account number and password
-        );
+        Authentication authentication = null;
+        JwtResponseDTO jwtResponse = null;
 
-        if (authentication.isAuthenticated()) {
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());  // Create refresh token for the authenticated user
-            JwtResponseDTO jwtResponse = JwtResponseDTO.builder()
-                    .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername()))  // Generate access token
-                    .token(refreshToken.getToken()).build();  // Include refresh token in the response
-            UserInfo userInfo = userService.getUserByUserName(authRequestDTO.getUsername());
+        try {
+    authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())  // Authenticate using account number and password
+    );
+    if (authentication.isAuthenticated()) {
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authRequestDTO.getUsername());  // Create refresh token for the authenticated user
+        jwtResponse = JwtResponseDTO.builder()
+                .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername()))  // Generate access token
+                .token(refreshToken.getToken()).build();  // Include refresh token in the response
+        UserInfo userInfo = userService.getUserByUserName(authRequestDTO.getUsername());
 
-            userService.updateUser(userInfo, httpServletRequest);
-           // return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful authentication
-            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK.value(), "Success", jwtResponse), HttpStatus.OK);
-        } else {
-            throw new InvalidCredentialsException("Invalid credentials provided.");  // Custom exception for invalid login credentials
-        }
+        userService.updateUser(userInfo, httpServletRequest);
+        // return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful authentication
+
+    } else {
+        //return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK.value(), "Success", jwtResponse), HttpStatus.OK);
+       // throw new InvalidCredentialsException(); // Custom exception for invalid login credentials
+    }
+} catch (Exception e) {
+            ApiResponse response = new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Invalid credentials provided.", jwtResponse);
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+}
+        return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK.value(), "Success", jwtResponse), HttpStatus.OK);
     }
 
     // Refresh the access token using the refresh token | 使用刷新令牌刷新访问令牌
