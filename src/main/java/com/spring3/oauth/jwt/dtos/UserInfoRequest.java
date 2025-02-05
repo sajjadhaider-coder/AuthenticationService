@@ -43,6 +43,6 @@ public class UserInfoRequest {
     private LocalDateTime createdAt;
     private String  createdBy;
     private int userId;
-    private LocalDateTime UpdatedAt;
-    private String  UpdatedBy;
+    private LocalDateTime updatedAt;
+    private String  updatedBy;
 }
