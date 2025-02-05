@@ -12,7 +12,7 @@ public class CustomCorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**") // Apply to all endpoints
                 .allowedOriginPatterns("*") // Specify allowed origins
                 .allowedMethods("*") // Specify allowed HTTP methods
-                .allowedHeaders("*") // Allow all headers
-                .allowCredentials(true); // Allow credentials (e.g., cookies, authorization headers)
+                .allowedHeaders("*"); // Allow all headers
+                //.allowCredentials(true); // Allow credentials (e.g., cookies, authorization headers)
     }
 }
