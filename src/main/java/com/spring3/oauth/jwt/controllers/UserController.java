@@ -67,12 +67,12 @@ public class UserController {
 
     // Get profile information of the current user (Requires ROLE_ADMIN)
     @GetMapping("/profile")
-    public ResponseEntity<UserInfoResponse> getUserProfile() {
+    public ApiResponse<UserInfoResponse> getUserProfile() {
         UserInfoResponse userResponse = userService.getUser();
         if (userResponse == null) {
             throw new UserNotFoundException("User not found.");  // Custom exception for user not found
         }
-        return new ResponseEntity<>(userResponse, HttpStatus.OK);  // 200 OK for successful profile retrieval
+        return new ApiResponse<>(HttpStatus.OK.value(), "Success", userResponse);  // 200 OK for successful profile retrieval
     }
 
     // Example endpoint to return a welcome message (Requires ROLE_ADMIN)
@@ -84,7 +84,7 @@ public class UserController {
 
     // Authenticate user and generate JWT access token
     @PostMapping("/login")
-    public ResponseEntity<JwtResponseDTO> authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ApiResponse> authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO, HttpServletRequest httpServletRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())  // Authenticate using account number and password
         );
@@ -97,7 +97,8 @@ public class UserController {
             UserInfo userInfo = userService.getUserByUserName(authRequestDTO.getUsername());
 
             userService.updateUser(userInfo, httpServletRequest);
-            return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful authentication
+           // return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful authentication
+            return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK.value(), "Success", jwtResponse), HttpStatus.OK);
         } else {
             throw new InvalidCredentialsException("Invalid credentials provided.");  // Custom exception for invalid login credentials
         }

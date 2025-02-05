@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author mhmdz
  * Created By Zeeshan on 20-05-2023
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class JwtResponseDTO {
+public class JwtResponseDTO implements Serializable {
 
     private String accessToken;
     private String token;
