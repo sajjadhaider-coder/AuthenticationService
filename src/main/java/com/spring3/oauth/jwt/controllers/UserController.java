@@ -62,9 +62,9 @@ public class UserController {
     public ResponseEntity<List<UserInfo>> getAllUsers() {
         List<UserInfo> userResponses = userService.getAllUser();
         if (userResponses.isEmpty()) {
-            throw new UserNotFoundException("No users found.");  // Custom exception when no users are found
+            throw new UserNotFoundException("No users found.");
         }
-        return new ResponseEntity<>(userResponses, HttpStatus.OK);  // 200 OK for successful response
+        return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/assignRole")
@@ -76,11 +76,11 @@ public class UserController {
             userResponse = userService.assignRole(roleIds, userId);
             statusCode = HttpStatus.OK.value();
             apiResponse = new ApiResponse(statusCode, "Success", userResponse);
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);  // 201 Created for successful user creation
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch (Exception e) {
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
             apiResponse = new ApiResponse(statusCode, "Success", userResponse);
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);  // 500 Internal Server Error for any unexpected exceptions 误
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -89,19 +89,17 @@ public class UserController {
     public ApiResponse<UserInfo> getUserProfile() {
         UserInfo userResponse = userService.getUser();
         if (userResponse == null) {
-            throw new UserNotFoundException("User not found.");  // Custom exception for user not found
+            throw new UserNotFoundException("User not found.");
         }
-        return new ApiResponse<>(HttpStatus.OK.value(), "Success", userResponse);  // 200 OK for successful profile retrieval
+        return new ApiResponse<>(HttpStatus.OK.value(), "Success", userResponse);
     }
 
-    // Example endpoint to return a welcome message (Requires ROLE_ADMIN)
     @Operation(summary = "Get greeting message", description = "Returns a greeting message")
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         return new ResponseEntity<>("Welcome", HttpStatus.OK);  // 200 OK for a successful request
     }
 
-    // Authenticate user and generate JWT access token
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> authenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO, HttpServletRequest httpServletRequest) {
         Authentication authentication = null;
@@ -132,7 +130,6 @@ public class UserController {
         return new ResponseEntity<>(new ApiResponse<>(HttpStatus.OK.value(), "Success", jwtResponse), HttpStatus.OK);
     }
 
-    // Refresh the access token using the refresh token | 使用刷新令牌刷新访问令牌
     @PostMapping("/refreshToken")
     public ResponseEntity<JwtResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
         JwtResponseDTO jwtResponse = refreshTokenService.findByToken(refreshTokenRequestDTO.getToken())

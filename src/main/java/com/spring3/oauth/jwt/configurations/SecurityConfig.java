@@ -23,8 +23,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * @author mhmdz
- * Created By Zeeshan on 20-05-2023
+ * @author sajjadhaider
+ * Created By sajjadhaider on  03-02-2025
  * @project oauth-jwt
  */
 @Configuration
@@ -51,16 +51,9 @@ public class SecurityConfig {
 
                         // Public endpoints
                         .requestMatchers("/api/v1/user/signup","/api/v1/role/addRole", "/api/v1/user/login", "/api/v1/user/refreshToken").permitAll()
-
                         // Secured endpoints
                         .requestMatchers("/api/v1/user/**").authenticated()
-                                .requestMatchers("/api/v1/role/**").authenticated()
-                        /*.requestMatchers("/api/v1//admin/**").hasRole("ADMIN")
-                        .requestMatchers("/agent/**").hasRole("AGENT")
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/support/**").hasRole("SUPPORT")
-                        .requestMatchers("/auditor/**").hasRole("AUDITOR")
-                        .anyRequest().authenticated()*/
+                        .requestMatchers("/api/v1/role/**").authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -88,7 +81,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
