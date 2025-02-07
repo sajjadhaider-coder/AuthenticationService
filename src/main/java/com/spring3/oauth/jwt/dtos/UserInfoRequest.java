@@ -1,5 +1,6 @@
 package com.spring3.oauth.jwt.dtos;
 
+import com.spring3.oauth.jwt.models.UserRole;
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -45,4 +47,7 @@ public class UserInfoRequest {
     private int userId;
     private LocalDateTime updatedAt;
     private String  updatedBy;
+    private List<UserRole> userRoleList;
+
+
 }

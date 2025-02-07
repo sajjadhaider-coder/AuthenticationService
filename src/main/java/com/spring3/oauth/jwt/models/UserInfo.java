@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -28,14 +25,13 @@ public class UserInfo {
 
     @NotNull
     @Column(name = "USER_NAME", unique = true, nullable = false, length = 20)
-    @JsonIgnore // Hide sensitive data if necessary
     private String username;
 
     @NotNull
     @Column(name = "VERIFICATION_CODE", length = 10)
     private String verificationCode;
 
-    @JsonIgnore // Prevent password from being serialized
+   // @JsonIgnore // Prevent password from being serialized
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
@@ -65,5 +61,8 @@ public class UserInfo {
 
     @Column(name = "UPDATED_BY")
     private String updatedBy;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    private Set<UserRole> roles = new HashSet<>();
 
 }

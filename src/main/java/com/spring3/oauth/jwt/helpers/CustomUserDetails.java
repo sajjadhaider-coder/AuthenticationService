@@ -2,6 +2,7 @@ package com.spring3.oauth.jwt.helpers;
 
 
 import com.spring3.oauth.jwt.models.UserInfo;
+import com.spring3.oauth.jwt.models.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +22,10 @@ public class CustomUserDetails extends UserInfo implements UserDetails {
         this.password= byUsername.getPassword();
         List<GrantedAuthority> auths = new ArrayList<>();
 
-        /*for(UserRole role : byUsername.getRoles()){
+        for(UserRole role : byUsername.getRoles()){
 
             auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
-        }*/
+        }
         this.authorities = auths;
     }
 

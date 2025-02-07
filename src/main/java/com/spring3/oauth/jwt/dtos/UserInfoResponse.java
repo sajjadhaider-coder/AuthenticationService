@@ -1,11 +1,13 @@
 package com.spring3.oauth.jwt.dtos;
 
+import com.spring3.oauth.jwt.models.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -25,5 +27,6 @@ public class UserInfoResponse {
     private String createdBy;
     private LocalDateTime updatedAt;
     private String updatedBy;
+    private List<UserRole> userRoleList;
 
 }

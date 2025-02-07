@@ -50,10 +50,17 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Public endpoints
-                        .requestMatchers("/api/v1/signup", "/result/getResult", "/api/v1/login", "/api/v1/refreshToken").permitAll()
+                        .requestMatchers("/api/v1/user/signup","/api/v1/role/addRole", "/api/v1/user/login", "/api/v1/user/refreshToken").permitAll()
 
                         // Secured endpoints
-                        .requestMatchers("/api/v1/**").authenticated()
+                        .requestMatchers("/api/v1/user/**").authenticated()
+                                .requestMatchers("/api/v1/role/**").authenticated()
+                        /*.requestMatchers("/api/v1//admin/**").hasRole("ADMIN")
+                        .requestMatchers("/agent/**").hasRole("AGENT")
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/support/**").hasRole("SUPPORT")
+                        .requestMatchers("/auditor/**").hasRole("AUDITOR")
+                        .anyRequest().authenticated()*/
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

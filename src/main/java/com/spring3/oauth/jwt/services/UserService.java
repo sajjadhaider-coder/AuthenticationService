@@ -11,15 +11,17 @@ import java.util.List;
 
 public interface UserService {
 
-    UserInfoResponse saveUser(UserInfoRequest userInfoRequest);
+    UserInfo saveUser(UserInfo userInfo);
 
-    UserInfoResponse getUser();
+    UserInfo getUser();
 
-    List<UserInfoResponse> getAllUser();
+    List<UserInfo> getAllUser();
      String  returnClientIp(HttpServletRequest request);
 
     UserInfoResponse updateUser(UserInfo userInfoRequest, HttpServletRequest httpServletRequest);
 
     UserInfo getUserByUserName(String userName);
+
+    UserInfo assignRole(List<String> roleIds, String userId);
 
 }

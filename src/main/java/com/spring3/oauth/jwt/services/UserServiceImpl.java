@@ -3,6 +3,8 @@ package com.spring3.oauth.jwt.services;
 import com.spring3.oauth.jwt.dtos.UserInfoRequest;
 import com.spring3.oauth.jwt.dtos.UserInfoResponse;
 import com.spring3.oauth.jwt.models.UserInfo;
+import com.spring3.oauth.jwt.models.UserRole;
+import com.spring3.oauth.jwt.repositories.RoleRespository;
 import com.spring3.oauth.jwt.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.text.StrTokenizer;
@@ -12,7 +14,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -31,18 +32,20 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    RoleRespository roleRespository;
     public static final String DYNAMODB_LOCATION_API = "http://ip-api.com/json/";
     ModelMapper modelMapper = new ModelMapper();
     public static final String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
     public static final Pattern pattern = Pattern.compile("^(?:" + _255 + "\\.){3}" + _255 + "$");
     @Override
-    public UserInfoResponse saveUser(UserInfoRequest userInfoRequest) {
-        if(userInfoRequest.getUsername()== null){
+    public UserInfo saveUser(UserInfo user) {
+        if(user.getUsername()== null){
             throw new RuntimeException("Parameter account number is not found in request..!!");
-        } else if(userInfoRequest.getPassword() == null){
+        } else if(user.getPassword() == null){
             throw new RuntimeException("Parameter password is not found in request..!!");
         }
-
+        Optional<UserInfo> persitedUser = Optional.of(new UserInfo());
 
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
@@ -53,15 +56,15 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         UserInfo savedUser = null;
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String rawPassword = userInfoRequest.getPassword();
+        String rawPassword = user.getPassword();
         String encodedPassword = encoder.encode(rawPassword);
 
-        UserInfo user = modelMapper.map(userInfoRequest, UserInfo.class);
-        user.setUsername(userInfoRequest.getUsername());
+       // UserInfo user = modelMapper.map(userInfoRequest, UserInfo.class);
+        user.setUsername(user.getUsername());
         user.setPassword(encodedPassword);
         user.setStatus("Active");
-        if(userInfoRequest.getId() != null && userInfoRequest.getId() > 0){
-            UserInfo oldUser = userRepository.findFirstById(userInfoRequest.getId());
+        if(user.getId() > 0){
+            UserInfo oldUser = userRepository.findFirstById(user.getId());
             oldUser.setCreatedBy(String.valueOf(oldUser.getUserId()));
             if(oldUser != null){
                 oldUser.setId(user.getId());
@@ -70,53 +73,49 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
                 oldUser.setVerificationCode(user.getVerificationCode());
                 oldUser.setUpdatedAt(LocalDateTime.now());
                 oldUser.setUpdatedBy(String.valueOf(oldUser.getUserId()));
-               // oldUser.setRoles(user.getRoles());
+                oldUser.setRoles(user.getRoles());
 
                 savedUser = userRepository.save(oldUser);
-                userRepository.refresh(savedUser);
+                persitedUser = userRepository.findById(savedUser.getId());
             } else {
-                throw new RuntimeException("Can't find record with identifier: " + userInfoRequest.getId());
+                throw new RuntimeException("Can't find record with identifier: " + persitedUser.get().getId());
             }
         } else {
 //            user.setCreatedBy(currentUser);
             user.setCreatedAt(LocalDateTime.now());
-            savedUser = userRepository.save(user);
+            persitedUser = Optional.of(userRepository.save(user));
         }
         userRepository.refresh(savedUser);
-        UserInfoResponse userResponse = modelMapper.map(savedUser, UserInfoResponse.class);
+        //UserInfoResponse userResponse = modelMapper.map(savedUser, UserInfoResponse.class);
+        //if (savedUser.getUsername() != null )
+        //    userResponse.setUsername(user.getUsername());
 
-        if (savedUser.getUsername() != null )
-            userResponse.setUsername(user.getUsername());
-
-        return userResponse;
+        return persitedUser.get();
     }
 
-
-
     @Override
-    public UserInfoResponse getUser() {
+    public UserInfo getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetail = (UserDetails) authentication.getPrincipal();
         String usernameFromAccessToken = userDetail.getUsername();
         UserInfo user = userRepository.findByUsername(usernameFromAccessToken);
-        UserInfoResponse userResponse = modelMapper.map(user, UserInfoResponse.class);
+       // UserInfoResponse userResponse = modelMapper.map(user, UserInfoResponse.class);
 
         if (user.getUsername() != null )
-            userResponse.setUsername(user.getUsername());
+            user.setUsername(user.getUsername());
 
-        return userResponse;
+        return user;
     }
 
     @Override
-    public List<UserInfoResponse> getAllUser() {
+    public List<UserInfo> getAllUser() {
         List<UserInfo> users = (List<UserInfo>) userRepository.findAll();
         Type setOfDTOsType = new TypeToken<List<UserInfoResponse>>(){}.getType();
         List<UserInfoResponse> userResponses = modelMapper.map(users, setOfDTOsType);
         for (int i = 0; i < users.size(); i++) {
             userResponses.get(i).setUsername(users.get(i).getUsername());
         }
-
-        return userResponses;
+        return users;
     }
 
     @Override
@@ -158,6 +157,25 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         UserInfo userInfo = userRepository.findByUsername(userName);
         //UserInfo user = modelMapper.map(userInfo, UserInfoResponse.class);
         return userInfo;
+    }
+
+    @Override
+    public UserInfo assignRole(List<String> roleIds, String userId) {
+        Set<UserRole> roleList = new HashSet<>();
+        Optional<UserRole> userRole = null;
+        Optional<UserInfo> userInfo = null;
+        try {
+            for (String id : roleIds) {
+                userRole = roleRespository.findById(Long.valueOf(id));
+                roleList.add(userRole.get());
+            }
+             userInfo = userRepository.findById(Long.valueOf(userId));
+            userInfo.get().setRoles(roleList);
+            userInfo = Optional.of(userRepository.save(userInfo.get()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo.get();
     }
 
     public String getIPLocation(String ip) {

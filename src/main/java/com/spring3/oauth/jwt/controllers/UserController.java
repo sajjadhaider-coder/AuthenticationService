@@ -29,46 +29,65 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:8841")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/user")
 public class UserController {
-
     @Autowired
-    private UserService userService;  // Inject UserService
+    private UserService userService;
     ModelMapper modelMapper = new ModelMapper();
     @Autowired
-    private JwtService jwtService;  // Inject JwtService for token generation
-
+    private JwtService jwtService;
     @Autowired
-    private RefreshTokenService refreshTokenService;  // Inject RefreshTokenService for token management
-
+    private RefreshTokenService refreshTokenService;
     @Autowired
-    private AuthenticationManager authenticationManager;  // Inject AuthenticationManager for user authentication
+    private AuthenticationManager authenticationManager;
 
-    // Register a new user | 注册新用户
     @PostMapping(value = "/signup")
-    public ResponseEntity<UserInfoResponse> saveUser(@RequestBody UserInfoRequest userRequest) {
+    public ResponseEntity<ApiResponse> saveUser(@RequestBody UserInfo userRequest) {
+        ApiResponse apiResponse = null;
+        int statusCode = 0;
+        UserInfo userResponse = null;
         try {
-            UserInfoResponse userResponse = userService.saveUser(userRequest);
-            return new ResponseEntity<>(userResponse, HttpStatus.CREATED);  // 201 Created for successful user creation
+            userResponse = userService.saveUser(userRequest);
+            statusCode = HttpStatus.OK.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);  // 500 Internal Server Error for any unexpected exceptions 误
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Get the list of all users | 获取所有用户列表
     @GetMapping("/users")
-    public ResponseEntity<List<UserInfoResponse>> getAllUsers() {
-        List<UserInfoResponse> userResponses = userService.getAllUser();
+    public ResponseEntity<List<UserInfo>> getAllUsers() {
+        List<UserInfo> userResponses = userService.getAllUser();
         if (userResponses.isEmpty()) {
             throw new UserNotFoundException("No users found.");  // Custom exception when no users are found
         }
         return new ResponseEntity<>(userResponses, HttpStatus.OK);  // 200 OK for successful response
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/assignRole")
+    public ResponseEntity<ApiResponse> assignRole(@RequestParam List<String> roleIds, @RequestParam String userId) {
+        ApiResponse apiResponse = null;
+        int statusCode = 0;
+        UserInfo userResponse = null;
+        try {
+            userResponse = userService.assignRole(roleIds, userId);
+            statusCode = HttpStatus.OK.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);  // 201 Created for successful user creation
+        } catch (Exception e) {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);  // 500 Internal Server Error for any unexpected exceptions 误
+        }
+    }
 
-    // Get profile information of the current user (Requires ROLE_ADMIN)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/profile")
-    public ApiResponse<UserInfoResponse> getUserProfile() {
-        UserInfoResponse userResponse = userService.getUser();
+    public ApiResponse<UserInfo> getUserProfile() {
+        UserInfo userResponse = userService.getUser();
         if (userResponse == null) {
             throw new UserNotFoundException("User not found.");  // Custom exception for user not found
         }
