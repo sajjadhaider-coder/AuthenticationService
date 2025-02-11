@@ -1,6 +1,5 @@
 package com.spring3.oauth.jwt.services;
 
-import com.spring3.oauth.jwt.dtos.UserInfoRequest;
 import com.spring3.oauth.jwt.dtos.UserInfoResponse;
 import com.spring3.oauth.jwt.models.UserInfo;
 import com.spring3.oauth.jwt.models.UserRole;
@@ -46,13 +45,6 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
             throw new RuntimeException("Parameter password is not found in request..!!");
         }
         Optional<UserInfo> persitedUser = Optional.of(new UserInfo());
-
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetail = (UserDetails) authentication.getPrincipal();
-//        String usernameFromAccessToken = userDetail.getUsername();
-//
-//        UserInfo currentUser = userRepository.findByUsername(usernameFromAccessToken);
-
         UserInfo savedUser = null;
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -85,12 +77,7 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
             user.setCreatedAt(LocalDateTime.now());
             persitedUser = Optional.of(userRepository.save(user));
         }
-        userRepository.refresh(savedUser);
-        //UserInfoResponse userResponse = modelMapper.map(savedUser, UserInfoResponse.class);
-        //if (savedUser.getUsername() != null )
-        //    userResponse.setUsername(user.getUsername());
-
-        return persitedUser.get();
+         return persitedUser.get();
     }
 
     @Override
@@ -139,16 +126,24 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
     }
 
     @Override
-    public UserInfoResponse updateUser(UserInfo userInfoRequest, HttpServletRequest httpServletRequest) {
+    public UserInfo updateUser(UserInfo userInfo) {
 
-        userInfoRequest.setUpdatedAt(LocalDateTime.now());
-        userInfoRequest.setUpdatedBy(userInfoRequest.getUpdatedBy());
-        userInfoRequest.setIpAddress(this.returnClientIp(httpServletRequest));
-        userInfoRequest.setUserLocation(this.getIPLocation(this.returnClientIp(httpServletRequest)));
-        userInfoRequest.setUpdatedBy(String.valueOf(userInfoRequest.getId()));
-        UserInfo user = modelMapper.map(userInfoRequest, UserInfo.class);
-        user = userRepository.save(user);
-        UserInfoResponse userResponse = modelMapper.map(user, UserInfoResponse.class);
+        UserInfo checkUser = null;
+        UserInfo userResponse = null;
+        if (userInfo.getUserId() > 0) {
+            checkUser = (UserInfo) userRepository.findUsersByUserId((long) userInfo.getUserId());
+        }
+        if (checkUser != null) {
+            checkUser.setUpdatedAt(LocalDateTime.now());
+            checkUser.setUpdatedBy(userInfo.getUpdatedBy());
+            checkUser.setIpAddress(userInfo.getIpAddress());
+            checkUser.setUserLocation(this.getIPLocation(userInfo.getUserLocation()));
+            checkUser.setUpdatedBy(String.valueOf(userInfo.getId()));
+            checkUser.setDeviceType(userInfo.getDeviceType());
+            checkUser = userRepository.save(checkUser);
+        } else {
+            userInfo = userRepository.save(userInfo);
+        }
         return userResponse;
     }
 
@@ -176,6 +171,11 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
             e.printStackTrace();
         }
         return userInfo.get();
+    }
+
+    @Override
+    public UserInfo findByUserId(String userId) {
+        return null;
     }
 
     public String getIPLocation(String ip) {

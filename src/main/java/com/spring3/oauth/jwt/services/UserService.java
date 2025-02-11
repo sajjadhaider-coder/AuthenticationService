@@ -18,10 +18,11 @@ public interface UserService {
     List<UserInfo> getAllUser();
      String  returnClientIp(HttpServletRequest request);
 
-    UserInfoResponse updateUser(UserInfo userInfoRequest, HttpServletRequest httpServletRequest);
+    UserInfo updateUser(UserInfo userInfoRequest);
 
     UserInfo getUserByUserName(String userName);
 
     UserInfo assignRole(List<String> roleIds, String userId);
+    UserInfo findByUserId(String userId);
 
 }

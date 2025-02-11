@@ -58,6 +58,23 @@ public class UserController {
         }
     }
 
+    @PostMapping("/updateUser")
+    public ResponseEntity<ApiResponse> updateUser(@RequestBody UserInfo userRequest) {
+        ApiResponse apiResponse = null;
+        int statusCode = 0;
+        UserInfo userResponse = null;
+        try {
+            userResponse = userService.updateUser(userRequest);
+            statusCode = HttpStatus.OK.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<UserInfo>> getAllUsers() {
         List<UserInfo> userResponses = userService.getAllUser();
@@ -116,7 +133,7 @@ public class UserController {
                 .token(refreshToken.getToken()).build();  // Include refresh token in the response
         UserInfo userInfo = userService.getUserByUserName(authRequestDTO.getUsername());
 
-        userService.updateUser(userInfo, httpServletRequest);
+        userService.updateUser(userInfo);
         // return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful authentication
 
     } else {
@@ -124,6 +141,7 @@ public class UserController {
        // throw new InvalidCredentialsException(); // Custom exception for invalid login credentials
     }
 } catch (Exception e) {
+            jwtResponse.setToken("");
             ApiResponse response = new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "Invalid credentials provided.", jwtResponse);
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 }
