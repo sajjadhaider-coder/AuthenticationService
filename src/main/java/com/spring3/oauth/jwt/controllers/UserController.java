@@ -40,7 +40,22 @@ public class UserController {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private AuthenticationManager authenticationManager;
-
+    @PostMapping("/updateUser")
+    public ResponseEntity<ApiResponse> updateUser(@RequestBody UserInfo userRequest) {
+        ApiResponse apiResponse = null;
+        int statusCode = 0;
+        UserInfo userResponse = null;
+        try {
+            userResponse = userService.updateUser(userRequest);
+            statusCode = HttpStatus.OK.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            apiResponse = new ApiResponse(statusCode, "Success", userResponse);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @Operation(summary = "Get greeting message", description = "Returns a greeting message")
     @GetMapping("/test")
