@@ -22,7 +22,6 @@ public interface UserService {
 
     UserInfo getUserByUserName(String userName);
 
-    UserInfo assignRole(List<String> roleIds, String userId);
     UserInfo findByUserId(String userId);
 
 }

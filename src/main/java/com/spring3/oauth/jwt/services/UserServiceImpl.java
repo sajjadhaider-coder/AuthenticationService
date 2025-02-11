@@ -3,7 +3,6 @@ package com.spring3.oauth.jwt.services;
 import com.spring3.oauth.jwt.dtos.UserInfoResponse;
 import com.spring3.oauth.jwt.models.UserInfo;
 import com.spring3.oauth.jwt.models.UserRole;
-import com.spring3.oauth.jwt.repositories.RoleRespository;
 import com.spring3.oauth.jwt.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.text.StrTokenizer;
@@ -31,8 +30,7 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
 
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    RoleRespository roleRespository;
+
     public static final String DYNAMODB_LOCATION_API = "http://ip-api.com/json/";
     ModelMapper modelMapper = new ModelMapper();
     public static final String _255 = "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
@@ -152,25 +150,6 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         UserInfo userInfo = userRepository.findByUsername(userName);
         //UserInfo user = modelMapper.map(userInfo, UserInfoResponse.class);
         return userInfo;
-    }
-
-    @Override
-    public UserInfo assignRole(List<String> roleIds, String userId) {
-        Set<UserRole> roleList = new HashSet<>();
-        Optional<UserRole> userRole = null;
-        Optional<UserInfo> userInfo = null;
-        try {
-            for (String id : roleIds) {
-                userRole = roleRespository.findById(Long.valueOf(id));
-                roleList.add(userRole.get());
-            }
-             userInfo = userRepository.findById(Long.valueOf(userId));
-            userInfo.get().setRoles(roleList);
-            userInfo = Optional.of(userRepository.save(userInfo.get()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return userInfo.get();
     }
 
     @Override
