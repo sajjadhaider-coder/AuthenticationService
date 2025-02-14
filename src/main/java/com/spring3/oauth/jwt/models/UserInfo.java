@@ -31,7 +31,7 @@ public class UserInfo {
     @Column(name = "VERIFICATION_CODE", length = 10)
     private String verificationCode;
 
-   // @JsonIgnore // Prevent password from being serialized
+    // @JsonIgnore // Prevent password from being serialized
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
@@ -61,6 +61,12 @@ public class UserInfo {
 
     @Column(name = "UPDATED_BY")
     private String updatedBy;
+
+    @Column(name = "PARENT_ID")
+    private String parentId;
+
+    @Column(name = "BALANCE")
+    private String userBalance;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private Set<UserRole> roles = new HashSet<>();

@@ -15,6 +15,6 @@ public interface UserRepository extends RefreshableCRUDRepository<UserInfo, Long
    public UserInfo findByUsername(String username);
    UserInfo findFirstById(Long id);
 
-   @Query(value = "SELECT * FROM USERS WHERE USER_ID = :userId", nativeQuery = true)
-   UserInfo findUsersByUserId(@Param("userId") Long userId);
+   @Query(value = "SELECT * FROM USERS WHERE user_id = :userId", nativeQuery = true)
+   UserInfo findUsersByUserId(@Param("userId") int userId);
 }

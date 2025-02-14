@@ -129,7 +129,7 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         UserInfo checkUser = null;
         UserInfo userResponse = null;
         if (userInfo.getUserId() > 0) {
-            checkUser = (UserInfo) userRepository.findUsersByUserId((long) userInfo.getUserId());
+            checkUser = (UserInfo) userRepository.findUsersByUserId((int)userInfo.getUserId());
         }
         if (checkUser != null) {
             checkUser.setUpdatedAt(LocalDateTime.now());
