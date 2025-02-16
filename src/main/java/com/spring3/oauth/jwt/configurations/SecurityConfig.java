@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Public endpoints
-                        .requestMatchers("/api/v1/user/signup","/api/v1/role/addRole","/api/v1/user/updateUser", "/api/v1/user/login", "/api/v1/user/refreshToken").permitAll()
+                        .requestMatchers("/api/v1/user/signup","/api/v1/role/addRole", "/api/v1/user/deleteUser/**", "/api/v1/user/updateUser", "/api/v1/user/login", "/api/v1/user/refreshToken").permitAll()
                         // Secured endpoints
                         .requestMatchers("/api/v1/user/**").authenticated()
                         .requestMatchers("/api/v1/role/**").authenticated()

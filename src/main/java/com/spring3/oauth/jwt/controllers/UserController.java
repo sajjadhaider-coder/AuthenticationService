@@ -109,6 +109,22 @@ public class UserController {
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful token refresh
     }
 
+    @PostMapping("/deleteUser/{userId}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") String userId){
+        int statusCode = 0;
+        ApiResponse response = null;
+        Boolean isDeleted = userService.deleteUser(Long.valueOf(userId));
+        if (!isDeleted) {
+            statusCode = HttpStatus.NOT_FOUND.value();
+            response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "FAILED", null);
+            throw new UserNotFoundException("User not found.");
+        } else {
+            statusCode = HttpStatus.OK.value();
+            response = new ApiResponse<>(HttpStatus.OK.value(), "Success", null);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     public Claims validateToken(String token, String secretKey) {
         try {
             // Parse the token and validate its signature

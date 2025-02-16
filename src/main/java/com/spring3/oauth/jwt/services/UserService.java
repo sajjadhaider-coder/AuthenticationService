@@ -23,5 +23,6 @@ public interface UserService {
     UserInfo getUserByUserName(String userName);
 
     UserInfo findByUserId(String userId);
+    Boolean deleteUser(Long userId);
 
 }

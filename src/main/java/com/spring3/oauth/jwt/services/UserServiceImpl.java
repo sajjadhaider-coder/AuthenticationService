@@ -134,6 +134,7 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
         if (checkUser != null) {
             checkUser.setUpdatedAt(LocalDateTime.now());
             checkUser.setUpdatedBy(userInfo.getUpdatedBy());
+            checkUser.setUserId(userInfo.getUserId());
             checkUser.setIpAddress(userInfo.getIpAddress());
             checkUser.setUserLocation(this.getIPLocation(userInfo.getUserLocation()));
             checkUser.setUpdatedBy(String.valueOf(userInfo.getId()));
@@ -143,6 +144,21 @@ public class UserServiceImpl implements com.spring3.oauth.jwt.services.UserServi
             userInfo = userRepository.save(userInfo);
         }
         return userResponse;
+    }
+
+    @Override
+    public Boolean deleteUser(Long userId) {
+        Boolean isDeleted = false;
+        try {
+            Optional<UserInfo> userInfo = Optional.ofNullable(userRepository.findUsersByUserId(Math.toIntExact(userId)));
+            if(!userInfo.isEmpty()) {
+                userRepository.delete(userInfo.get());
+                isDeleted = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isDeleted;
     }
 
     @Override
