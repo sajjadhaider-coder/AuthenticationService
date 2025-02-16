@@ -11,6 +11,7 @@ import com.spring3.oauth.jwt.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -40,6 +41,8 @@ public class UserController {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Hidden
     @PostMapping("/updateUser")
     public ResponseEntity<ApiResponse> updateUser(@RequestBody UserInfo userRequest) {
         ApiResponse apiResponse = null;
@@ -109,6 +112,7 @@ public class UserController {
         return new ResponseEntity<>(jwtResponse, HttpStatus.OK);  // 200 OK for successful token refresh
     }
 
+    @Hidden
     @PostMapping("/deleteUser/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") String userId){
         int statusCode = 0;
